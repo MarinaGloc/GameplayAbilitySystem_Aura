@@ -2,7 +2,7 @@
 
 
 #include "Player/AuraPlayerController.h"
-#include "AuraPlayerController.h"
+#include "EnhancedInputSubsystems.h"
 
 AAuraPlayerController::AAuraPlayerController()
 {

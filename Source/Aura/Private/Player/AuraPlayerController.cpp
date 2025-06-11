@@ -5,10 +5,76 @@
 
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "Interaction/EnemyInterface.h"
 
 AAuraPlayerController::AAuraPlayerController()
 {
     bReplicates = true; // Enable replication for this player controller, it replicates to all clients in multiplayer games
+}
+
+void AAuraPlayerController::PlayerTick(float DeltaTime)
+{
+    Super::PlayerTick(DeltaTime);
+    
+    CursorTrace();
+}
+
+void AAuraPlayerController::CursorTrace()
+{
+    FHitResult CursorHit;
+    GetHitResultUnderCursor(ECC_Visibility, false, CursorHit);
+    if (!CursorHit.bBlockingHit) return;
+
+    LastActor = ThisActor;
+    ThisActor = CursorHit.GetActor();
+
+    /**
+    * Line trace from cursor. There are severa scenarios
+    * 1. LastActor is null && ThisActor is null
+    *   - Do nothing
+    * 2. LastActor is null && ThisActor is valid
+    *   - Highlight ThisActor
+    * 3. LastActor is valid && ThisActor is null
+    *   - Unhighlight LastActor
+    * 4. Both actors are valid, but LastActor != ThisActor
+    *   - Unhighlight LastActor, and highlight ThisActor
+    * 5. Both actors are valid, and LastActor == ThisActor
+    *  - Do nothing
+    **/
+
+    if(LastActor == nullptr){
+        if(ThisActor != nullptr)
+        {
+            //Case 2
+            ThisActor->HighlightActor(); // Highlight the new actor under the cursor
+        }
+        else
+        {
+            //Case 1
+            // Do nothing, no actors to highlight or unhighlight
+        }
+    }
+    else // LastActor is valid
+    {
+        if(ThisActor == nullptr)
+        {
+            //Case 3
+            LastActor->UnhighlightActor(); // Unhighlight the last actor
+        }
+        else{
+            if (LastActor != ThisActor)
+            {
+                //Case 4
+                LastActor->UnhighlightActor(); // Unhighlight the last actor
+                ThisActor->HighlightActor(); // Highlight the new actor under the cursor
+            }
+            else
+            {
+                //Case 5
+                // Do nothing, both actors are the same
+            }
+        }
+    }
 }
 
 void AAuraPlayerController::BeginPlay()
@@ -54,5 +120,4 @@ void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
         ControlledPawn->AddMovementInput(ForwardDirection, InputAxisVector.Y);
         ControlledPawn->AddMovementInput(RightDirection, InputAxisVector.X);
     }
-
 }

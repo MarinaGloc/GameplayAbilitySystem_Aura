@@ -2,7 +2,9 @@
 
 
 #include "Player/AuraPlayerController.h"
+
 #include "EnhancedInputSubsystems.h"
+#include "EnhancedInputComponent.h"
 
 AAuraPlayerController::AAuraPlayerController()
 {
@@ -25,5 +27,32 @@ void AAuraPlayerController::BeginPlay()
     InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock); // Do not lock the mouse to the viewport
     InputModeData.SetHideCursorDuringCapture(false); // Do not hide the cursor during input capture
     SetInputMode(InputModeData); // Set the input mode to game and UI, allowing interaction with both game and UI elements
+
+}
+
+void AAuraPlayerController::SetupInputComponent()
+{
+    Super::SetupInputComponent();
+    // Additional input setup can be done here if needed
+
+    UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent);
+
+    EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AAuraPlayerController::Move);
+}
+
+void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
+{
+    const FVector2D InputAxisVector = InputActionValue.Get<FVector2D>();
+    const FRotator Rotation = GetControlRotation();
+    const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+    const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+    const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+    if(APawn* ControlledPawn = GetPawn<APawn>())
+    {
+        ControlledPawn->AddMovementInput(ForwardDirection, InputAxisVector.Y);
+        ControlledPawn->AddMovementInput(RightDirection, InputAxisVector.X);
+    }
 
 }

@@ -8,6 +8,7 @@
 
 
 class UInputMappingContext;
+class UInputAction;
 /**
  * 
  */
@@ -23,9 +24,14 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	virtual void SetupInputComponent() override;
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Input")
-	TObjectPtr<UInputMappingContext> AuraContext; 
+	TObjectPtr<UInputMappingContext> AuraContext;
 	
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<UInputAction> MoveAction;
+
+	void Move(const struct FInputActionValue& InputActionValue);
 };

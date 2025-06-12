@@ -32,3 +32,11 @@ void AAuraEnemy::UnhighlightActor()
     GetMesh()->SetRenderCustomDepth(false);  // Set the flag to false when unhighlighted
     Weapon->SetRenderCustomDepth(false);
 }
+
+void AAuraEnemy::BeginPlay()
+{
+    Super::BeginPlay();
+
+    check(AbilitySystemComponent);
+    AbilitySystemComponent->InitAbilityActorInfo(this, this); // Initialize the ability system component with the actor info
+}

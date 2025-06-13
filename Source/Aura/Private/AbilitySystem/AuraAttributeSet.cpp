@@ -6,7 +6,7 @@
 
 UAuraAttributeSet::UAuraAttributeSet()
 {
-    InitHealth(100.0f); // Initialize Health to 100
+    InitHealth(50.0f); // Initialize Health to 100
     InitMaxHealth(100.0f); // Initialize MaxHealth to 100
     InitMana(50.0f); // Initialize Mana to 50
     InitMaxMana(50.0f); // Initialize MaxMana to 50
